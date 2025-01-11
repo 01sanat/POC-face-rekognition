@@ -1,4 +1,5 @@
 const AWS = require('aws-sdk');
+const fs = require('fs'); // Import the fs module
 require('dotenv').config();
 
 // Configure AWS with credentials
@@ -11,10 +12,24 @@ AWS.config.update({
 // Create a Rekognition client
 const rekognition = new AWS.Rekognition();
 
+// Function to convert image to byte data
+const getImageBytes = (filePath) => {
+    try {
+        const fileData = fs.readFileSync(filePath); // Read file as buffer
+        return fileData;
+    } catch (err) {
+        console.error(`Error reading image file at ${filePath}:`, err);
+        throw err;
+    }
+};
+
 // Parameters for compareFaces
+const imagePath1 = `${__dirname}/images/series-sanat.jpg`;
+const imagePath2 = `${__dirname}/images/sanat-qutub.jpg`;
+
 const params = {
-    SourceImage: '',
-    TargetImage: '',
+    SourceImage: { Bytes: getImageBytes(imagePath1) },
+    TargetImage: { Bytes: getImageBytes(imagePath2) },
     SimilarityThreshold: 90,
 };
 
